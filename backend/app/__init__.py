@@ -3,14 +3,14 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
-from pymongo import MongoClient
+from flask_pymongo import PyMongo
 
 # Initialize SQLAlchemy
 db = SQLAlchemy()
 migrate = Migrate()
 
-# Initialize MongoDB client
-mongo_client = None
+# Initialize Flask-PyMongo
+mongo = PyMongo()
 
 def create_app(test_config=None):
     # Create and configure the app
@@ -26,7 +26,7 @@ def create_app(test_config=None):
             SECRET_KEY=os.environ.get('SECRET_KEY', 'dev'),
             SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/testassistant'),
             SQLALCHEMY_TRACK_MODIFICATIONS=False,
-            MONGODB_URI=os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/testassistant')
+            MONGO_URI=os.environ.get('MONGODB_URI', 'mongodb://mongo:27017/testassistant')
         )
     else:
         # Load the test config if passed in
@@ -36,10 +36,13 @@ def create_app(test_config=None):
     db.init_app(app)
     migrate.init_app(app, db)
     
-    # Initialize MongoDB connection
-    global mongo_client
-    mongo_client = MongoClient(app.config['MONGODB_URI'])
-    
+    # Initialize Flask-PyMongo with the app
+    mongo.init_app(app)
+
+    # Import models here to ensure they are registered with SQLAlchemy
+    with app.app_context():
+        from app import models # This line ensures models are discovered by Flask-Migrate
+
     # Register blueprints
     from app.api import bp as api_bp
     app.register_blueprint(api_bp, url_prefix='/api')

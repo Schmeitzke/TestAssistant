@@ -3,10 +3,10 @@ from datetime import datetime
 
 class Test(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(120), index=True)
+    title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text)
-    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     subject = db.Column(db.String(64), index=True)
     grade_level = db.Column(db.String(32))
     time_limit_minutes = db.Column(db.Integer, default=60)
@@ -15,6 +15,7 @@ class Test(db.Model):
     # Relationships
     questions = db.relationship('Question', backref='test', lazy='dynamic', cascade='all, delete-orphan')
     submissions = db.relationship('Submission', backref='test', lazy='dynamic')
+    creator = db.relationship('User', backref=db.backref('created_tests', lazy=True))
     
     def __repr__(self):
         return f'<Test {self.title}>'
@@ -25,7 +26,7 @@ class Test(db.Model):
             'title': self.title,
             'description': self.description,
             'creator_id': self.creator_id,
-            'created_at': self.created_at.isoformat() + 'Z',
+            'created_at': self.creation_date.isoformat() + 'Z',
             'subject': self.subject,
             'grade_level': self.grade_level,
             'time_limit_minutes': self.time_limit_minutes,

@@ -35,29 +35,17 @@ An intelligent system designed to streamline educational assessment processes us
 
 1. Clone the repository
 2. Run `docker-compose up` to start the development environment
-3. Backend API will be available at http://localhost:5000
-4. Frontend will be available at http://localhost:3000
+3. Access the running backend container:
+   `docker-compose exec backend bash`
+4. Inside the container, initialize migrations (only once):
+   `flask db init`
+5. Create the initial migration:
+   `flask db migrate -m "Initial migration with User and Test models"`
+6. Apply the migration to the database:
+   `flask db upgrade`
+7. Backend API will be available at http://localhost:5000
+8. Frontend will be available at http://localhost:3000
 
 ## Project Structure
 
 ```
-├── backend/                # Flask API server
-│   ├── app/                # Application code
-│   │   ├── api/            # API routes
-│   │   ├── core/           # Core business logic
-│   │   ├── services/       # External service integrations
-│   │   └── models/         # Data models
-│   ├── tests/              # Test suite
-│   └── Dockerfile          # Backend Docker configuration
-├── frontend/               # React application
-│   ├── src/                # Source files
-│   ├── public/             # Static assets
-│   └── Dockerfile          # Frontend Docker configuration
-├── database/               # Database scripts and migrations
-├── docker-compose.yml      # Docker composition for development
-└── docs/                   # Documentation
-```
-
-## Cloud Deployment
-
-The application is designed to be deployed on cloud platforms with appropriate scaling configurations. 

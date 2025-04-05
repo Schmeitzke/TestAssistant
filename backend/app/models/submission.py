@@ -1,4 +1,4 @@
-from app import db, mongo_client
+from app import db, mongo
 from datetime import datetime
 
 class Submission(db.Model):
@@ -36,20 +36,20 @@ class Submission(db.Model):
         """
         Retrieve the OCR results and grading from MongoDB
         """
-        if mongo_client is None:
+        if mongo is None:
             return None
         
-        db = mongo_client.testassistant
+        db = mongo.testassistant
         return db.submission_answers.find_one({'submission_id': self.id})
     
     def save_answers(self, answers_data):
         """
         Save OCR results and grading to MongoDB
         """
-        if mongo_client is None:
+        if mongo is None:
             return False
         
-        db = mongo_client.testassistant
+        db = mongo.testassistant
         
         # Add submission_id to the answers_data
         answers_data['submission_id'] = self.id

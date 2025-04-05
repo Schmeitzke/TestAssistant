@@ -1,9 +1,7 @@
 from flask import jsonify, request
 from app.api import bp
-from app import mongo_client
 from app.models.submission import Submission
 from app import db
-import os
 
 @bp.route('/submissions', methods=['GET'])
 def get_submissions():

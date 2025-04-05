@@ -6,6 +6,7 @@ flask-cors==5.0.1
 openai==1.70.0
 psycopg2-binary==2.9.10
 pymongo==4.11.3
+Flask-PyMongo==3.0.1
 python-dotenv==1.1.0
 pydantic==2.11.2
 pillow==11.1.0

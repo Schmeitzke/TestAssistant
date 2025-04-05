@@ -1,13 +1,19 @@
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import enum
+
+class UserRole(enum.Enum):
+    TEACHER = 'teacher'
+    STUDENT = 'student'
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
-    role = db.Column(db.String(20), default='student')  # 'student', 'teacher', 'admin'
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    role = db.Column(db.Enum(UserRole), nullable=False, default=UserRole.STUDENT)
+    # Add password hash later for security
+    # password_hash = db.Column(db.String(128))
     first_name = db.Column(db.String(64))
     last_name = db.Column(db.String(64))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

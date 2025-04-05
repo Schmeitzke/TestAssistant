@@ -1,57 +1,82 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  // Mock data - would come from API in real implementation
-  const [userRole, setUserRole] = useState('teacher'); // Toggle between 'teacher' and 'student' to see different views
+  // Keep userRole state for toggling demo view, but remove mock data
+  const [userRole, setUserRole] = useState('teacher'); 
   const [userData, setUserData] = useState({
-    name: 'John Smith',
+    name: 'Demo User', // Placeholder name
     role: userRole,
     stats: userRole === 'teacher' 
-      ? { tests: 12, students: 87, graded: 45 }
-      : { completed: 8, average: '85%', pending: 2 }
+      ? { tests: 0, students: 0, graded: 0 } // Default empty stats
+      : { completed: 0, average: 'N/A', pending: 0 }
   });
 
-  const [recentItems, setRecentItems] = useState(
-    userRole === 'teacher'
-      ? [
-          { id: 1, title: 'Physics Midterm', date: '2023-04-01', status: 'Published', studentsCompleted: 18 },
-          { id: 2, title: 'Chemistry Quiz', date: '2023-03-28', status: 'Grading', studentsCompleted: 22 },
-          { id: 3, title: 'Math Final', date: '2023-03-15', status: 'Draft', studentsCompleted: 0 }
-        ]
-      : [
-          { id: 1, title: 'Physics Midterm', date: '2023-04-01', status: 'Completed', score: '92%' },
-          { id: 2, title: 'Chemistry Quiz', date: '2023-03-28', status: 'Pending Grading', score: '-' },
-          { id: 3, title: 'Biology Test', date: '2023-03-10', status: 'Completed', score: '78%' }
-        ]
-  );
+  // State for fetched tests
+  const [recentItems, setRecentItems] = useState([]); 
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
+
+  // Fetch data when component mounts or userRole changes
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Fetch tests if role is teacher
+        if (userRole === 'teacher') {
+          // Use environment variable for API URL or default
+          const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000'; 
+          const response = await fetch(`${apiUrl}/api/tests`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          setRecentItems(data); // Update state with fetched tests
+          // Update stats based on fetched data (example)
+          setUserData(prev => ({
+            ...prev,
+            stats: { ...prev.stats, tests: data.length }
+          }));
+        } else {
+          // Clear items if role is student (implement student data fetch later)
+          setRecentItems([]);
+          setUserData(prev => ({
+            ...prev,
+            stats: { completed: 0, average: 'N/A', pending: 0 } 
+          }));
+        }
+      } catch (e) {
+        setError(e.message);
+        console.error("Failed to fetch data:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [userRole]); // Re-fetch when userRole changes
+
 
   // Function to simulate role change - for demonstration purposes
   const toggleRole = () => {
     const newRole = userRole === 'teacher' ? 'student' : 'teacher';
-    setUserRole(newRole);
-    setUserData({
-      ...userData,
-      role: newRole,
-      stats: newRole === 'teacher' 
-        ? { tests: 12, students: 87, graded: 45 }
-        : { completed: 8, average: '85%', pending: 2 }
-    });
-    setRecentItems(
-      newRole === 'teacher'
-        ? [
-            { id: 1, title: 'Physics Midterm', date: '2023-04-01', status: 'Published', studentsCompleted: 18 },
-            { id: 2, title: 'Chemistry Quiz', date: '2023-03-28', status: 'Grading', studentsCompleted: 22 },
-            { id: 3, title: 'Math Final', date: '2023-03-15', status: 'Draft', studentsCompleted: 0 }
-          ]
-        : [
-            { id: 1, title: 'Physics Midterm', date: '2023-04-01', status: 'Completed', score: '92%' },
-            { id: 2, title: 'Chemistry Quiz', date: '2023-03-28', status: 'Pending Grading', score: '-' },
-            { id: 3, title: 'Biology Test', date: '2023-03-10', status: 'Completed', score: '78%' }
-          ]
-    );
+    setUserRole(newRole); // This will trigger the useEffect hook
   };
+
+  // Update user data immediately when role toggles for responsiveness
+  useEffect(() => {
+    setUserData(prev => ({
+      ...prev,
+      name: 'Demo User',
+      role: userRole,
+      // Reset stats until data is fetched
+      stats: userRole === 'teacher' 
+        ? { tests: 0, students: 0, graded: 0 }
+        : { completed: 0, average: 'N/A', pending: 0 }
+    }));
+  }, [userRole]);
 
   return (
     <div className="dashboard">
@@ -109,20 +134,27 @@ const Dashboard = () => {
           </div>
 
           <div className="items-list">
-            {recentItems.map(item => (
+            {loading && <p>Loading...</p>}
+            {error && <p className="error-message">Error loading data: {error}</p>}
+            {!loading && !error && recentItems.length === 0 && (
+              <p>No tests found.</p> // Show message if no tests
+            )}
+            {!loading && !error && recentItems.map(item => (
               <div key={item.id} className="list-item">
                 <div className="item-info">
                   <h3>{item.title}</h3>
-                  <p className="item-date">Date: {item.date}</p>
+                  {/* Assuming 'created_at' from backend */} 
+                  <p className="item-date">Created: {new Date(item.created_at).toLocaleDateString()}</p>
                 </div>
                 <div className="item-status">
-                  <span className={`status ${item.status.toLowerCase().replace(' ', '-')}`}>
-                    {item.status}
+                   {/* Display relevant status info from item, e.g., item.is_published */} 
+                   <span className={`status ${item.is_published ? 'published' : 'draft'}`}>
+                    {item.is_published ? 'Published' : 'Draft'}
                   </span>
                   {userRole === 'teacher' ? (
-                    <p>{item.studentsCompleted} students completed</p>
+                    <p>Questions: {item.question_count}</p> // Example using fetched data
                   ) : (
-                    <p>Score: {item.score}</p>
+                     <p>Score: {item.score || 'N/A'}</p> // Placeholder for student score
                   )}
                 </div>
               </div>

@@ -163,7 +163,7 @@ const Dashboard = () => {
 
           {userRole === 'teacher' && (
             <div className="action-buttons">
-              <Link to="/tests/create" className="btn btn-primary">
+              <Link to="/test/new" className="btn btn-primary">
                 Create New Test
               </Link>
               <Link to="/tests/generate" className="glass-button">
@@ -178,7 +178,7 @@ const Dashboard = () => {
           <div className="actions-grid">
             {userRole === 'teacher' ? (
               <>
-                <Link to="/tests/create" className="action-card">
+                <Link to="/test/new" className="action-card">
                   <h3>Create Test</h3>
                   <p>Design a new test from scratch</p>
                 </Link>

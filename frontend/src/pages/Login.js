@@ -30,8 +30,10 @@ const Login = () => {
     }
     
     // In a real app, would call API to authenticate
-    // For demonstration, just redirect to dashboard
-    navigate('/');
+    // For demonstration, set a dummy token and redirect
+    localStorage.setItem('token', 'dummy-auth-token'); // Simulate login
+    setError(''); // Clear any previous errors
+    navigate('/dashboard'); // Navigate to dashboard after login
   };
   
   return (

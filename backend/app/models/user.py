@@ -18,9 +18,9 @@ class User(db.Model):
     last_name = db.Column(db.String(64))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Relationships
-    created_tests = db.relationship('Test', backref='creator', lazy='dynamic')
-    submissions = db.relationship('Submission', backref='student', lazy='dynamic')
+    # Relationships - use string references to avoid circular imports
+    created_tests = db.relationship('Test', backref='creator', lazy='dynamic', foreign_keys='Test.creator_id')
+    submissions = db.relationship('Submission', backref='student', lazy='dynamic', foreign_keys='Submission.student_id')
     
     def __repr__(self):
         return f'<User {self.username}>'
@@ -36,7 +36,7 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
-            'role': self.role,
+            'role': self.role.value if isinstance(self.role, UserRole) else self.role,
             'first_name': self.first_name,
             'last_name': self.last_name,
             'created_at': self.created_at.isoformat() + 'Z'

@@ -55,6 +55,8 @@ export const testsAPI = {
   create: (data) => api.post('/tests', data),
   update: (id, data) => api.put(`/tests/${id}`, data),
   generateTest: (data) => api.post('/tests/generate', data),
+  generateQuestion: (testId, data) => api.post(`/tests/${testId}/generate-question`, data),
+  exportPdf: (testId) => api.get(`/tests/${testId}/export-pdf`, { responseType: 'blob' }),
   getQuestions: (testId) => api.get(`/tests/${testId}/questions`),
 };
 

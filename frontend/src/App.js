@@ -5,8 +5,6 @@ import './index.css';
 
 // Import Page Components (Create these files next)
 import DashboardPage from './pages/Dashboard';
-import TestSetupPage from './pages/TestSetupPage';
-import TestEditorPage from './pages/TestEditorPage';
 import LoginPage from './pages/Login';
 import NotFound from './pages/NotFound';
 
@@ -32,20 +30,6 @@ function App() {
             <Route 
               path="/dashboard" 
               element={<DashboardPage />} 
-            />
-            {/* Add both route paths for test creation to support links in Dashboard */}
-            <Route 
-              path="/test/new" 
-              element={<TestSetupPage />} 
-            />
-            <Route 
-              path="/tests/create" 
-              element={<TestSetupPage />} 
-            />
-            {/* Temporarily remove auth check */}
-            <Route 
-              path="/test/edit/:testId" 
-              element={<TestEditorPage />} 
             />
             {/* Use the proper NotFound component */}
             <Route path="*" element={<NotFound />} />

@@ -112,13 +112,13 @@ def create_app(test_config=None):
         
         # Seed the database with initial data in development mode
         # Use FLASK_ENV or assume development if not set
-        env = os.environ.get('FLASK_ENV', 'development')
-        if env != 'production':
-            try:
-                from app.db_seed import seed_db
-                seed_db()
-            except Exception as e:
-                print(f"Error seeding database: {e}")
+        # env = os.environ.get('FLASK_ENV', 'development')
+        # if env != 'production':
+        #     try:
+        #         from app.db_seed import seed_db
+        #         seed_db()
+        #     except Exception as e:
+        #         print(f"Error seeding database: {e}")
 
     # Register blueprints
     from app.api import bp as api_bp

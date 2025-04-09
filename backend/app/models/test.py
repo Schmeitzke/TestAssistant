@@ -13,7 +13,7 @@ class Test(db.Model):
     test_date = db.Column(db.DateTime, nullable=True)
     course_name = db.Column(db.String(255), nullable=True)
     subject = db.Column(db.String(100), nullable=True)
-    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     status = db.Column(db.String(50), default='draft')
     mongo_content_id = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
